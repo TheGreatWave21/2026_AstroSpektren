@@ -63,7 +63,7 @@ except Exception as e:
     exit(1)
 
 
-# Ausgabe-Dateiname generieren: (star_name)_IRC
+# Ausgabe-Dateiname generieren: "Sternenname" und dann "_IRC"
 
 star_name_clean = OBJECT_NAME.lower().replace(" ", "_").replace("/", "_")
 OUTPUT_FILE = os.path.join(folder_path, f"{star_name_clean}_IRC.csv")
@@ -126,7 +126,7 @@ def apply_ir_calibration(wavelengths, flux_atm_corrected, exposure_time, K, ir_p
     return flux_calibrated
 
 
-# hauptprogramm
+# main
 
 print("="*70)
 print("SCHRITT 3: ANWENDUNG DER INSTRUMENTELLEN RESPONSE")
@@ -349,3 +349,4 @@ print(f"  2. {plot_path} - Visualisierung")
 print("\nNächster Schritt:")
 print("  -> Führen Sie 'step4_blackbody_fit.py' aus für Temperaturbestimmung")
 print(f"{'='*70}")
+
