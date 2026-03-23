@@ -51,18 +51,13 @@ if not header_files:
 HEADER_FILE = os.path.join(folder_path, header_files[0])
 print("Gefundene FITS-Datei:", HEADER_FILE)
 
-# Optional: Extinktionskurve
 EXTINCTION_FILE = None
 
 # Standard-Observatorium (wird überschrieben, falls im Header vorhanden)
 OBSERVATORY = "Standard"
 
-# Wellenlängenbereich für Filterung
 LAMBDA_MIN = 3800.0
 LAMBDA_MAX = 7000.0
-
-
-# HEADER AUSLESEN
 
 def read_header_info(fits_file):
     """Extrahiert Beobachtungsinformationen aus FITS-Header."""
@@ -74,8 +69,7 @@ def read_header_info(fits_file):
     hdul.close()
 
     info = {}
-
-    # Datum/Zeit (UTC)
+    
     date_obs = header.get("DATE-OBS", None)
     if date_obs:
         try:
@@ -85,16 +79,15 @@ def read_header_info(fits_file):
         except Exception:
             info["datetime_utc"] = None
 
-    # Objektname
     info["object_name"] = header.get("OBJECT", "Unbekannt")
 
-    # Standortname und Koordinaten
+
     info["location_name"] = header.get("ORIGIN", "Unbekannt")
-    # Hardcoded observatory coordinates: 47.70003° N, 7.94875° E
+    # Hardcoded observatory coordinates: 47.70003° N, 7.94875° E -> if needed please change them since they are included here: see one line below and two lines below:
     info["latitude"] = 47.70003
     info["longitude"] = 7.94875
 
-    # Beobachtungsinstrument
+    # Beobachtungsinstrument -> nicht allzu wichtig aber hat immer noch einfluss
     info["instrument"] = header.get("INSTRUME", "Unbekannt")
 
     return info
@@ -107,7 +100,7 @@ print("="*70)
 try:
     header_info = read_header_info(HEADER_FILE)
 except Exception as e:
-    print(f"⚠️  Konnte Header nicht lesen: {e}")
+    print(f"Konnte Header nicht lesen: {e}")
     print("Bitte überprüfe HEADER_FILE oder installiere astropy.")
     exit(1)
 
@@ -119,7 +112,7 @@ LONGITUDE = header_info.get("longitude", 0.0)
 
 obs_datetime_utc = header_info.get("datetime_utc", None)
 if obs_datetime_utc is None:
-    print("⚠️  Keine gültige Beobachtungszeit im Header gefunden!")
+    print("Keine gültige Beobachtungszeit im Header gefunden!")
     OBSERVATION_DATE = input("Bitte Datum eingeben (YYYY-MM-DD): ")
     OBSERVATION_TIME = input("Bitte Zeit eingeben (HH:MM, Ortszeit): ")
     TIMEZONE = "Europe/Berlin"
@@ -247,7 +240,6 @@ def calculate_object_position(latitude, longitude, obs_datetime_utc,
     RA_deg = ra_hours * 15.0
     hour_angle = LST - RA_deg
     
-    # Umrechnung in Höhe und Azimut
     lat_rad = np.radians(latitude)
     dec_rad = np.radians(dec_degrees)
     ha_rad = np.radians(hour_angle)
@@ -262,7 +254,7 @@ def calculate_object_position(latitude, longitude, obs_datetime_utc,
     
     zenith_angle = 90.0 - altitude
     
-    # Airmass (Kasten & Young 1989)
+
     z_rad = np.radians(zenith_angle)
     airmass = 1.0 / (np.cos(z_rad) + 0.50572 * (96.07995 - zenith_angle)**(-1.6364))
     
@@ -277,7 +269,7 @@ def get_object_coordinates(object_name):
         ra_hours, dec_degrees
     """
     
-    # Datenbank bekannter Objekte (Epoche J2000)
+
     objects = {
         "Vega": (18.6156, 38.7837),
         "VegaNeu": (18.6156, 38.7837),
@@ -332,7 +324,7 @@ def get_object_coordinates(object_name):
     return None, None
 
 
-# HAUPTPROGRAMM
+# main
 
 print("="*70)
 print("SCHRITT 1: ATMOSPHÄRISCHE KORREKTUR DER ROHDATEN")
@@ -430,7 +422,6 @@ plot_filename = os.path.join(folder_path, f"{output_basename}.png")
 
 print(f"\nAusgabe-Dateiname (CSV): {output_csv_path}")
 
-# Lade Extinktionskurve
 if EXTINCTION_FILE:
     print(f"Lade Extinktionskurve aus: {EXTINCTION_FILE}")
     k_ext_wavelengths, k_ext_values = load_extinction_curve(EXTINCTION_FILE)
@@ -441,7 +432,7 @@ else:
 print(f"Extinktionskurve: {len(k_ext_wavelengths)} Stützstellen")
 print(f"Wellenlängenbereich: {k_ext_wavelengths.min():.0f} - {k_ext_wavelengths.max():.0f} Å")
 
-# Lade beobachtete Rohdaten
+
 print(f"\n{'='*70}")
 print("LADE ROHDATEN")
 print(f"{'='*70}")
@@ -463,7 +454,6 @@ try:
             try:
                 if hasattr(data, 'names') and data.names is not None:
                     names = [n.lower() for n in data.names]
-                    # pick wavelength column
                     wcol = None
                     for candidate in ('lambda', 'wavelength', 'wave', 'lam'):
                         if candidate in names:
@@ -471,7 +461,6 @@ try:
                             break
                     if wcol is None:
                         wcol = data.names[0]
-                    # pick flux column
                     fcol = None
                     for candidate in ('flux', 's_obs', 'sobs', 'flam', 'f_lambda'):
                         if candidate in names:
@@ -487,7 +476,6 @@ try:
                     data_found = True
                     break
                 else:
-                    # Plain numeric array: could be 2-column table or 1D spectrum
                     arr = np.array(data)
                     if arr.ndim == 2 and arr.shape[1] >= 2:
                         lambda_obs = arr[:, 0].astype(float)
@@ -495,7 +483,6 @@ try:
                         data_found = True
                         break
                     elif arr.ndim == 1:
-                        # Try to reconstruct wavelength axis from header (CRVAL1/ CDELT1 / CRPIX1)
                         n = arr.shape[0]
                         lambda_obs = None
                         if header is not None:
@@ -504,18 +491,14 @@ try:
                             crpix = header.get('CRPIX1', 1.0)
                             naxis1 = header.get('NAXIS1', n)
                             if (crval is not None) and (cdelt is not None):
-                                # FITS uses 1-based pixel coordinates
                                 pix = np.arange(n) + 1
                                 lambda_obs = crval + (pix - crpix) * cdelt
-                        # Fallback: try WCS if available
                         if lambda_obs is None:
                             try:
                                 from astropy.wcs import WCS
                                 w = WCS(header)
                                 pix = np.arange(n)
-                                # w.wcs_pix2world expects shape (N, ndim)
                                 world = w.wcs_pix2world(pix[:, None], 0)
-                                # take first axis as wavelength
                                 lambda_obs = np.asarray(world).squeeze()
                             except Exception:
                                 lambda_obs = None
@@ -524,19 +507,17 @@ try:
                             data_found = True
                             break
                         else:
-                            # Could not build wavelength array for this HDU; provide diagnostics
                             hdr_keys = list(header.keys()) if header is not None else []
                             print(f"Skipping HDU {idx}: 1D data found but no CRVAL1/CDELT1 or usable WCS. Header keys: {hdr_keys[:20]}...")
                             continue
             except Exception as e:
-                # try next HDU
                 print(f"Warning: failed to parse HDU {idx}: {e}")
                 continue
         hdul.close()
         if not data_found:
             raise RuntimeError(f"Could not extract wavelength/flux from FITS file: {INPUT_FILE}")
     else:
-        # Plain text file: try utf-8 first, fallback to latin-1 and finally replace errors
+
         obs_lines = None
         for encoding in ('utf-8', 'latin-1'):
             try:
@@ -546,21 +527,21 @@ try:
             except UnicodeDecodeError:
                 continue
         if obs_lines is None:
-            # last resort: read with replacement for invalid bytes
+
             with open(INPUT_FILE, 'r', encoding='utf-8', errors='replace') as f:
                 obs_lines = f.readlines()
 
         obs_data = []
-        # detect delimiter and skip common header lines
+
         for raw in obs_lines:
             line = raw.strip()
             if line == '' or line.startswith('#'):
                 continue
-            # skip header if it contains non-numeric column names
+
             low = line.lower()
             if 'lambda' in low and ('flux' in low or 's_obs' in low or 'flux' in low):
                 continue
-            # choose delimiter: prefer comma if present, otherwise whitespace
+
             if ',' in line:
                 parts = [p.strip() for p in line.split(',')]
             else:
@@ -571,7 +552,7 @@ try:
                     s_obs = float(parts[1].replace(',', '.'))
                     obs_data.append([lambda_obs, s_obs])
                 except ValueError:
-                    # skip malformed lines
+
                     continue
         obs_data = np.array(obs_data)
         if obs_data.size == 0:
@@ -581,8 +562,7 @@ try:
 
     print(f"\nBeobachtete Rohdaten geladen: {len(lambda_obs)} Datenpunkte")
     print(f"Wellenlängenbereich: {lambda_obs.min():.2f} - {lambda_obs.max():.2f} Å")
-
-    # Filtere auf physikalischen Bereich
+    
     mask = (lambda_obs >= LAMBDA_MIN) & (lambda_obs <= LAMBDA_MAX) & (s_obs > 0)
     lambda_obs_filtered = lambda_obs[mask]
     s_obs_filtered = s_obs[mask]
@@ -592,8 +572,7 @@ try:
     if len(lambda_obs_filtered) == 0:
         print("\nFEHLER: Keine Datenpunkte im gültigen Wellenlängenbereich!")
         exit(1)
-    
-    # Wende atmosphärische Korrektur an
+
     print(f"\n{'='*70}")
     print("ATMOSPHÄRISCHE KORREKTUR")
     print(f"{'='*70}")
@@ -602,7 +581,6 @@ try:
         lambda_obs_filtered, s_obs_filtered, AIRMASS, k_ext_wavelengths, k_ext_values
     )
     
-    # Berechne Statistiken
     correction_percent = (extinction_factor - 1) * 100
     mean_corr = np.mean(correction_percent)
     max_corr = np.max(correction_percent)
@@ -613,7 +591,6 @@ try:
     print(f"Korrektur bei 5500 Å: {correction_percent[np.argmin(np.abs(lambda_obs_filtered-5500))]:.3f}%")
     print(f"Korrektur bei 7000 Å: {correction_percent[np.argmin(np.abs(lambda_obs_filtered-7000))]:.3f}%")
     
-    # Speichere atmosphärisch korrigierte Rohdaten als CSV neben den Eingangsdaten
     with open(output_csv_path, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(["# Atmosphärisch korrigierte Beobachtung"])
@@ -642,10 +619,8 @@ try:
     print(f"  -> {output_csv_path}")
     print(f"{'='*70}")
     
-    # Visualisierung
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
-    # Plot 1: Extinktionskurve
     ax1 = axes[0, 0]
     ax1.plot(k_ext_wavelengths, k_ext_values, 'ro-', markersize=6, linewidth=2)
     ax1.set_xlabel('Wellenlänge λ [Å]', fontsize=11)
@@ -653,7 +628,6 @@ try:
     ax1.set_title(f'Extinktionskurve ({OBSERVATORY})', fontsize=12, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     
-    # Plot 2: Extinktionsfaktor
     ax2 = axes[0, 1]
     ax2.plot(lambda_obs_filtered, extinction_factor, 'b-', linewidth=1.5)
     ax2.axhline(y=1.0, color='k', linestyle='--', linewidth=1)
@@ -668,7 +642,6 @@ try:
     ax2.text(0.05, 0.95, textstr, transform=ax2.transAxes, fontsize=9,
             verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
     
-    # Plot 3: Spektrum vorher/nachher
     ax3 = axes[1, 0]
     ax3.plot(lambda_obs_filtered, s_obs_filtered, 'b-', linewidth=1.5, alpha=0.7, 
             label='Roh (beobachtet)')
@@ -680,7 +653,6 @@ try:
     ax3.legend(fontsize=10)
     ax3.grid(True, alpha=0.3)
     
-    # Plot 4: Prozentuale Korrektur
     ax4 = axes[1, 1]
     ax4.plot(lambda_obs_filtered, correction_percent, 'g-', linewidth=1.5)
     ax4.axhline(y=0, color='k', linestyle='--', linewidth=1)
@@ -712,3 +684,7 @@ try:
 except FileNotFoundError:
     print(f"\nFEHLER: Datei '{INPUT_FILE}' nicht gefunden!")
     print("Bitte stellen Sie sicher, dass die Rohdaten vorhanden sind.")
+
+
+
+# end of programm if it isnt too clear.
