@@ -113,7 +113,7 @@ def compute_a_b(input_folder):
     se_b = np.sqrt(cov_beta[1, 1])
     rmse = np.sqrt(np.mean(residuals**2))
 
-    # Ergebnis TXT speichern
+    # ergebnis in .txt gespeichert
     txt_path = os.path.join(input_folder, "calibration_results.txt")
     with open(txt_path, "w") as f:
         f.write("=== Referenzsterne ===\n")
