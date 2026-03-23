@@ -1,5 +1,5 @@
 """
-SA100/ASI1600MM Pro – Align & Stack mit wählbarer Stack-Methode (Median, Mean, Sigma-Clipping)
+SA100/ASI1600MM Pro - Align & Stack mit einers der verschiedenen Stack-Methoden (also z.B.: Median, Mean, Sigma-Clipping)
 automatischem Sternnamen im Dateinamen
 """
 
@@ -14,12 +14,9 @@ from astropy.io import fits
 from astropy.stats import sigma_clip
 from scipy import ndimage
 
-# --- Konstanten ---
 SEARCH_WINDOW = 61
 CENTROID_WINDOW = 21
 SHIFT_ORDER = 3
-
-# Ordnerpfad aus TXT lesen
 
 TXT_PATH = r"C:\Users\joche\Desktop\python\Astro\1. stack + align\ordner.txt"
 
@@ -36,7 +33,7 @@ def read_folder_from_txt() -> Tuple[str, str]:
 
     return folder, ""   # kein Filter
 
-# Hilfsfunktionen
+# funktionen die helfen hahahahhaha
 
 def collect_fits(folder: str, name_filter: str) -> List[str]:
     """Sammelt alle FITS-Dateien im Ordner, optional mit Namensfilter."""
@@ -125,18 +122,18 @@ def extract_star_name(filename: str) -> str:
             break
     return name.strip().lower()
 
-# Hauptprogramm
+# main
 
 def main():
-    # Ordner aus TXT lesen
+    # aus .txt rauslesen
     folder, filt = read_folder_from_txt()
-    print(f" Images-Ordner aus TXT geladen:\n{folder}")
+    print(f" Ordner aus TXT geladen:\n{folder}")
 
     files = collect_fits(folder, filt)
     print(f"Gefundene Dateien: {len(files)}")
 
     star_name = extract_star_name(files[0])
-    print(f"Stern erkannt: {star_name}")
+    print(f"SErkannter Stern: {star_name}")
 
     data0 = fits.getdata(files[0]).astype(float)
     x_click, y_click = show_image_and_get_click(data0, "Klicke auf die 0. Ordnung (heller Punkt)")
@@ -151,11 +148,11 @@ def main():
         aligned.append(aligned_img)
         print(f"[{idx}/{len(files)}] {os.path.basename(path)}  → Shift dx={dx:+.3f}, dy={dy:+.3f}")
 
-    # Stack-Methode
+    # stack
     method = input("Stack-Methode wählen (median/mean/sigma) [median]: ").strip().lower() or "median"
     stacked = stack_images(aligned, method=method)
 
-    # Methoden-Kürzel bestimmen
+    #def
     if method.startswith("med"):
         mcode = "med"
     elif method.startswith("mea"):
@@ -163,7 +160,7 @@ def main():
     else:
         mcode = "s"
 
-    # Neuer Dateiname: stern_s(anzahl)(mcode)
+    #stern_s(anzahl)(mcode)
     outname = f"{star_name}_s{len(files)}{mcode}.fits"
     outpath = os.path.join(folder, outname)
 
