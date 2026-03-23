@@ -20,11 +20,11 @@ Ursprünglich sollte die effektive Sterntemperatur vor allem durch einen **Planc
 
 Dieses Repository dient dazu, die komplette Arbeit in einer transparenten und sauberen Form zusammenzuführen. Es soll insbesondere enthalten:
 
-> die vollständige schriftliche Arbeit als PDF
-> die komplette Python-Pipeline zur Auswertung der Sternspektren
-> gegebenenfalls Rohdaten, Zwischenprodukte und verarbeitete Spektren
-> Abbildungen zum Aufbau, zur Auswertung und zu den Ergebnissen
-> eine nachvollziehbare Struktur, damit andere den Workflow verstehen und reproduzieren können
+- die vollständige schriftliche Arbeit als PDF
+- die komplette Python-Pipeline zur Auswertung der Sternspektren
+- gegebenenfalls Rohdaten, Zwischenprodukte und verarbeitete Spektren
+- Abbildungen zum Aufbau, zur Auswertung und zu den Ergebnissen
+- eine nachvollziehbare Struktur, damit andere den Workflow verstehen und reproduzieren können
 
 ---
 
@@ -52,13 +52,13 @@ Außerdem spielt die Balmerkante bei etwa 3646 Å eine zentrale Rolle.
 ## Datenaufnahme
 
 Für Aufnahme und Steuerung wurden zwei Softwaresysteme verwendet:
-> CCDciel zur direkten Kamerasteuerung und Bildaufnahme
-> ASIAir für GoTo-Funktion und präzise Nachführung
+- CCDciel zur direkten Kamerasteuerung und Bildaufnahme
+- ASIAir für GoTo-Funktion und präzise Nachführung
 Die ASI 1600MM Pro wurde über CCDciel angesteuert, wodurch die Aufnahmen in Echtzeit betrachtet und die Belichtungszeit optimiert werden konnten. Die ASIAir-Plattform übernahm das automatische Anfahren der Zielsterne sowie die exakte Nachführung während der Aufnahmen. Pro Stern wurden zwischen 10 und 60 Einzelaufnahmen erstellt. Die Belichtungszeiten variierten je nach Helligkeit zwischen wenigen Sekunden und mehreren Minuten. Alle Aufnahmen wurden im FITS-Format gespeichert. Dieses astronomische Standardformat enthält neben den Bilddaten auch wichtige Metadaten wie: 
-> Belichtungszeit
-> Kameraeinstellungen
-> Zeitstempel
-> Objektkoordinaten
+- Belichtungszeit
+- Kameraeinstellungen
+- Zeitstempel
+- Objektkoordinaten
 Die gesamte Datenauswertung erfolgte ausschließlich mit selbst entwickelten Python-Skripten.
 
 
@@ -69,38 +69,38 @@ Zur Bestimmung der effektiven Temperatur wurden zwei unabhängige Methoden verwe
 
 Bei dieser Methode wurde das Spektrum oberhalb der Balmerkante bis 7000 Å mit dem Planckschen Strahlungsgesetz gefittet.
 Vor dem Fit wurden:
-> instrumentelle Korrekturen angewendet
-> atmosphärische Korrekturen angewendet
-> markante Absorptionslinien, insbesondere Balmerlinien, maskiert
+- instrumentelle Korrekturen angewendet
+- atmosphärische Korrekturen angewendet
+- markante Absorptionslinien, insbesondere Balmerlinien, maskiert
 
 Anschließend wurde die effektive Temperatur 𝑇_eff als freier Parameter variiert, bis die beste Übereinstimmung erreicht war. Die resultierende Temperatur entspricht der Temperatur eines idealisierten Schwarzkörpers, dessen Strahlungsspektrum dem beobachteten Sternspektrum am besten entspricht.
 
 2. **Farbenindexbasierte Temperaturbestimmung** (B–V)
 Neben der kontinuierlichen Spektralanalyse wurde die effektive Temperatur auch photometrisch über den B–V-Farbenindex bestimmt.
 Dieser beschreibt die Helligkeitsdifferenz eines Sterns im:
-> B-Band bei 4450 Å
-> V-Band bei 5510 Å
+- B-Band bei 4450 Å
+- V-Band bei 5510 Å
 Die Methode ist besonders robust, weil sie auf integrierten Helligkeiten basiert und dadurch weniger empfindlich gegenüber einzelnen Spektralmerkmalen oder Rauschen ist. Für diese Methode wurden ausschließlich atmosphärenkorrigierte Spektren ohne instrumentelle Response-Korrektur verwendet, da die Ballesteros-Formel nur auf dem relativen Intensitätsverhältnis zwischen B- und V-Band basiert. Die instrumentell gemessenen Farbenindizes wurden mithilfe von Referenzsternen linear kalibriert. Die Umrechnung von B–V in die effektive Temperatur erfolgte anschließend mit der Ballesteros-Formel.
 
 ##Ergebnisse
 **Beobachtete Spektren**
 Die Arbeit zeigt normierte Spektren von Sternen verschiedener Spektralklassen im Wellenlängenbereich von 3900–7000 Å.
 Die Normierung ermöglicht den direkten Vergleich der spektralen Form unabhängig von der absoluten Helligkeit. Ein zentrales Merkmal ist die Lage des Intensitätsmaximums, das sich mit der effektiven Temperatur systematisch verschiebt:
-> heiße Sterne (O, B): Maximum im UV-Bereich, Spektrum steigt zum blauen Ende an
-> mittlere Temperaturen (F, G): relativ flacher Verlauf, Maximum im sichtbaren Bereich
-> kühle Sterne (K, M): Maximum im nahen Infrarot, Spektrum steigt zum roten Ende an
+- heiße Sterne (O, B): Maximum im UV-Bereich, Spektrum steigt zum blauen Ende an
+- mittlere Temperaturen (F, G): relativ flacher Verlauf, Maximum im sichtbaren Bereich
+- kühle Sterne (K, M): Maximum im nahen Infrarot, Spektrum steigt zum roten Ende an
 Die Messungen bestätigen damit qualitativ die theoretischen Erwartungen an die Temperaturabhängigkeit der Sternspektren.
 
 **Methodenvergleich**
 Verglichen wurden:
-> Planck-Fit
-> B–V-Farbenindex
+- Planck-Fit
+- B–V-Farbenindex
 Für O-Sterne ergaben sich Abweichungen von bis zu 60 % vom Literaturwert. In diesem Temperaturbereich über 30.000 K sind beide Methoden ungeeignet, da der Großteil der Strahlung im UV-Bereich außerhalb des gemessenen Wellenlängenbereichs liegt und der B–V-Index seine Sensitivität verliert. Für alle anderen Spektralklassen von B bis M lagen die Temperaturen im Bereich unter Berücksichtigung der statistischen Messfehler.
 Die B–V-Methode lieferte systematisch genauere Ergebnisse:
 
-> durchschnittlich 100–200 K geringere Abweichung
-> geringe Streuung von etwa 7 %
-> statistische Fehler meist nur etwa 10 K
+- durchschnittlich 100–200 K geringere Abweichung
+- geringe Streuung von etwa 7 %
+- statistische Fehler meist nur etwa 10 K
 Insgesamt ermöglichen beide Methoden, ergänzt durch spektrale Merkmale, eine erfolgreiche Temperaturbestimmung für den Großteil der untersuchten Sterne.
 
 **Modellgrenzen des Planck-Fits**
@@ -110,18 +110,18 @@ Sterne der F- und besonders G-Klasse zeigen die beste Übereinstimmung zwischen 
 
 In dieser Arbeit wurde untersucht, inwieweit sich mit einem kostengünstigen Amateuraufbau hochwertige Sternspektren aufnehmen und auswerten lassen und daraus zuverlässige Temperaturbestimmungen möglich sind.
 Die aufgenommenen Spektren zeigen eine hohe Qualität und ermöglichen:
-> die Klassifizierung nach Spektraltyp anhand charakteristischer Absorptionslinien
-> die quantitative Temperaturbestimmung
+- die Klassifizierung nach Spektraltyp anhand charakteristischer Absorptionslinien
+- die quantitative Temperaturbestimmung
 Getestet wurden zwei unabhängige Methoden:
-> Planck-Fit an das Kontinuum
-> photometrischer B–V-Farbenindex
+- Planck-Fit an das Kontinuum
+- photometrischer B–V-Farbenindex
 Während der Planck-Fit für Sterne mittlerer Temperatur, insbesondere F- und G-Sterne, gute Ergebnisse lieferte, zeigten sich bei A-Sternen systematische Abweichungen durch die Struktur der Sternatmosphäre und die Energieumverteilung ab der Balmerkante.
 Der B–V-Index erwies sich insgesamt als robuster und lieferte durchgängig zuverlässigere Temperaturen mit Abweichungen von typischerweise 100–200 K zu Literaturwerten. Die Kombination beider Methoden ermöglicht eine gegenseitige Validierung und erhöht die Verlässlichkeit der Ergebnisse. Für sehr heiße O-Sterne sind beide Ansätze ungeeignet, da der Großteil ihrer Strahlung im UV-Bereich außerhalb des Messbereichs liegt.
 Zukünftige Verbesserungen könnten sein:
-> Korrektur systematischer Fehler
-> Einsatz von Gittern mit höherer Liniendichte
-> höhere spektrale Auflösung
-> alternative Temperaturbestimmung über Äquivalentbreiten charakteristischer Absorptionslinien
+- Korrektur systematischer Fehler
+- Einsatz von Gittern mit höherer Liniendichte
+- höhere spektrale Auflösung
+- alternative Temperaturbestimmung über Äquivalentbreiten charakteristischer Absorptionslinien
 Insgesamt zeigt die Arbeit, dass auch mit einfachen Mitteln wissenschaftlich aussagekräftige Spektroskopie möglich ist.
 
 ## Lizenz
