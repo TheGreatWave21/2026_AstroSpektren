@@ -12,7 +12,6 @@ from astropy.io import fits
 import os
 import csv
 
-# KONFIGURATION
 
 # Eingabe-Dateiname (atmosphärisch korrigierte Vega-Daten)
 INPUT_FILE = r'C:\Users\benne\Desktop\jufo 2025-26\data\Auswertung\Spektralklassen\sa100gersbach\Messungencropped\VegaNeu\251212_17.25_veganeu_atmosphere_corrected.csv'
