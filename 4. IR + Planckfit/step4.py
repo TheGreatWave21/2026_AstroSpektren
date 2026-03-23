@@ -10,7 +10,7 @@ import csv
 SCHRITT 4: Schwarzkörper-Fit zur Temperaturbestimmung
 
 Fittet das kalibrierte und normierte Spektrum an die Plancksche
-Strahlungsformel zur Bestimmung der effektiven Temperatur.
+Strahlungsformel zur Bestimmung der effektiven Temperatur (was wir als die T_eff interpretieren)!!!!! bitte beachten btw
 """
 # KONFIGURATION
 
@@ -22,7 +22,7 @@ with open(r"C:\Users\joche\Desktop\python\Astro\1. stack + align\ordner.txt", "r
 
 # Alle Dateien im Ordner auflisten
 all_files = os.listdir(folder_path)
-print("Alle Dateien im Ordner:", all_files)  # zur Kontrolle
+print("Alle Dateien im Ordner:", all_files)  
 
 # INPUT_FILE auswählen (endet mit _IRC.csv)
 
@@ -34,15 +34,14 @@ if not input_files:
 INPUT_FILE = os.path.join(folder_path, input_files[0])
 print("Gefundene CSV-Datei:", INPUT_FILE)
 
-# Wellenlängenbereich für den Fit [Å]
 LAMBDA_MIN = 4000.0  # Å
 LAMBDA_MAX = 7000.0  # Å
 
 # Startwert für Temperatur
-T_INITIAL = 9000.0  # Kelvin (anpassen je nach erwartetem Objekt)
+T_INITIAL = 9000.0  # Kelvin nicht C oder F
 
 # Parameter für Absorptionslinien-Erkennung
-ABSORPTION_THRESHOLD = 0.3  # Relative Tiefe (15%)
+ABSORPTION_THRESHOLD = 0.3   
 MASK_WIDTH = 0 # ±Datenpunkte
 
 # Manuelle Absorptionslinien (optional)
@@ -610,3 +609,4 @@ except RuntimeError as e:
     print("\nMögliche Lösungen:")
     print("  - Passen Sie T_INITIAL an")
     print("  - Ändern Sie ABSORPTION_THRESHOLD oder MASK_WIDTH")
+
